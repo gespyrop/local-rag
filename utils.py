@@ -1,4 +1,6 @@
-from pypdf import PdfReader
+'''
+LocalRAG utils
+'''
 
 
 def chunk_text(text, chunk_size=500, overlap=50) -> list[str]:
@@ -20,17 +22,3 @@ def chunk_text(text, chunk_size=500, overlap=50) -> list[str]:
         start += chunk_size - overlap
 
     return chunks
-
-
-def extract_pdf_text(path: str) -> str:
-    '''
-    Extrat the text from a PDF file.
-
-    :param path: PDF file path.
-    :type path: str
-    :return: Extracted text
-    :rtype: str
-    '''
-    reader = PdfReader(path)
-
-    return "\n".join([page.extract_text() for page in reader.pages])

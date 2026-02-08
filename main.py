@@ -2,29 +2,32 @@
 Local RAG
 '''
 import argparse
-from documents import extract_pdf_text, chunk_text
-from embedding import get_text_embeddings
+
 from vector import VectorQueryResult, vector_database_factory
+from embedding import get_text_embeddings
+from parsers import parser_factory
+from utils import chunk_text
 
 
 CHUNK_SIZE = 50
 CHUNK_OVERLAP = 10
 
 
-def add_pdf(pdf_file: str):
+def add_file(file: str):
     '''
-    Add a PDF file to the vector database.
+    Add a file to the vector database.
 
-    :param pdf_file: PDF file path
-    :type pdf_file: str
+    :param file: File path
+    :type file: str
     '''
-    file_name = pdf_file.split('/')[-1].split('.')[0]
-    text = extract_pdf_text(pdf_file)
+    file_name, file_extension = file.split('/')[-1].split('.')
+    file_parser = parser_factory(file_extension)
+    text = file_parser(file)
 
     chunks = chunk_text(text, CHUNK_SIZE, CHUNK_OVERLAP)
 
     ids = [f'{file_name}_chunk_{chunk+1}' for chunk in range(len(chunks))]
-    metadatas = [{"source": pdf_file} for _ in chunks]
+    metadatas = [{"source": file} for _ in chunks]
     embeddings = get_text_embeddings(chunks)
 
     db = vector_database_factory('chroma', collection='documents')
@@ -68,7 +71,7 @@ if __name__ == "__main__":
             exit(1)
 
         # Add document
-        add_pdf(args.add)
+        add_file(args.add)
 
         print(f'Added "{args.add}"')
 
