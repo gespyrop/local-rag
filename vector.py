@@ -60,14 +60,50 @@ class VectorDatabase(Protocol):
         ...
 
 
+# Maps keys to VectorDatabase subclasses
+registry: dict[str, VectorDatabase] = {}
+
+
+def register(key: str):
+    '''
+    Decorator that registers a VectorDatabase subclass under a given key.
+
+    :param key: A unique key for VectorDatabase subclasses
+    :type key: str
+    '''
+    def decorator(cls):
+        registry[key] = cls
+
+    return decorator
+
+
+def vector_database_factory(key: str, *args, **kwargs) -> VectorDatabase:
+    '''
+    Factory function that returns the `VectorDatabase` instance
+    registered under the provided key.
+
+    :param key: Key under which the `VectorDatabase` instance is registered.
+    (e.g. `'chroma'`)
+    :type key: str
+    :return: `VectorDatabase` instance registered under the provided `key`.
+    :rtype: VectorDatabase
+    '''
+    if key not in registry:
+        raise KeyError(f'"{key}" is not registered as a vector database')
+
+    return registry[key](*args, **kwargs)
+
+
+@register('chroma')
 class ChromaDatabase(VectorDatabase):
     '''
     Chroma Vector Database
     '''
 
-    def __init__(self, collection: str):
+    def __init__(self, **kwargs):
+        collection_name = kwargs.get('collection', 'documents')
         self.client = chromadb.PersistentClient()
-        self.collection = self.client.get_or_create_collection(collection)
+        self.collection = self.client.get_or_create_collection(collection_name)
 
     def add(self, ids, embeddings, metadatas, documents):
         self.collection.add(ids, embeddings, metadatas, documents)

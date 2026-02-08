@@ -4,7 +4,7 @@ Local RAG
 import argparse
 from documents import extract_pdf_text, chunk_text
 from embedding import get_text_embeddings
-from vector import ChromaDatabase, VectorQueryResult
+from vector import VectorQueryResult, vector_database_factory
 
 
 CHUNK_SIZE = 50
@@ -27,7 +27,7 @@ def add_pdf(pdf_file: str):
     metadatas = [{"source": pdf_file} for _ in chunks]
     embeddings = get_text_embeddings(chunks)
 
-    db = ChromaDatabase('documents')
+    db = vector_database_factory('chroma', collection='documents')
     db.add(ids, embeddings, metadatas, documents=chunks)
 
 
@@ -44,7 +44,7 @@ def search(query: str, k: int = 3) -> list[VectorQueryResult]:
     '''
     embedding = get_text_embeddings(query)
 
-    db = ChromaDatabase('documents')
+    db = vector_database_factory('chroma', collection='documents')
     return db.query(embedding, k)
 
 
