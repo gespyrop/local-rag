@@ -1,0 +1,9 @@
+# Chunk properties
+chunk:
+  size: 500
+  overlap: 100
+
+# Vector database properties
+vector:
+  db: chroma
+  collection: documents

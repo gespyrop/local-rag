@@ -1,11 +1,12 @@
 [project]
 name = "localrag"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local Retrieval-Augmented Generation"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "chromadb>=1.4.1",
+    "omegaconf>=2.3.0",
     "pypdf>=6.6.2",
     "pytest>=9.0.2",
     "sentence-transformers>=5.2.2",
