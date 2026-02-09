@@ -55,3 +55,17 @@ def parse_pdf(path: str) -> str:
     reader = PdfReader(path)
 
     return "\n".join([page.extract_text() for page in reader.pages])
+
+
+@register('txt')
+def parse_txt(path: str) -> str:
+    '''
+    Extract the text from a txt file.
+
+    :param path: File path.
+    :type path: str
+    :return: Extracted text
+    :rtype: str
+    '''
+    with open(path, 'r', encoding='utf-8') as f:
+        return f.read()
