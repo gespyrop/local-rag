@@ -1,4 +1,4 @@
-from parsers import parser_factory
+from local_rag.parsers import parser_factory
 
 
 class TestParsers:

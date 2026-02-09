@@ -3,10 +3,10 @@ High-level RAG logic.
 '''
 from typing import Self
 from omegaconf import OmegaConf
-from vector import VectorDatabase, VectorQueryResult, vector_database_factory
-from embedding import get_text_embeddings
-from parsers import parser_factory
-from utils import chunk_text
+from .vector import VectorDatabase, VectorQueryResult, vector_database_factory
+from .embedding import get_text_embeddings
+from .parsers import parser_factory
+from .utils import chunk_text
 
 
 class RAGService:

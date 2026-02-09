@@ -2,7 +2,7 @@
 Local RAG
 '''
 import argparse
-from rag import RAGService
+from local_rag import RAGService
 
 if __name__ == "__main__":
     # Parse arguments

@@ -1,4 +1,4 @@
-from utils import chunk_text
+from local_rag.utils import chunk_text
 
 
 class TestUtils:

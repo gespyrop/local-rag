@@ -17,6 +17,8 @@ vector:
 ## Usage
 ### Create a `RAGService`
 ```python
+from local_rag import RAGService
+
 rag = RAGService.from_yaml_config('config.yaml')
 ```
 
