@@ -11,6 +11,8 @@ if __name__ == "__main__":
         description='Local Retrieval-Augmented Generation.'
     )
 
+    parser.add_argument('question', nargs='?', help='A question to the LLM.')
+
     parser.add_argument(
         '-a', '--add',
         help='Add a new file to the vector database.'
@@ -38,13 +40,30 @@ if __name__ == "__main__":
         print(f'Added "{args.add}"')
 
     # Query
-    elif args.query:
+    if args.query:
         print('Query:', args.query)
 
         for result in rag.search(args.query):
             print('\n', 10 * '-', f'{result.source}: {result.id}', 10 * '-')
             print('Chunk:', result.content)
 
-    # Print usage message
-    else:
+    # Question
+    if args.question:
+        print('Question:', args.question)
+
+        response = rag.ask(args.question)
+
+        files = set()
+        for source in response.sources:
+            files.add(source.source)
+
+        print('Answer:', response.content)
+
+        print('\n Sources:')
+
+        for file in files:
+            print('-', file)
+
+    # Print help
+    if not (args.question or args.add or args.query):
         parser.print_help()

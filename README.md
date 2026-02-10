@@ -12,6 +12,12 @@ chunk:
 vector:
   db: chroma
   collection: documents
+
+# LLM properties
+llm:
+  provider: ollama
+  host: http://localhost:11434
+  model: sam860/LFM2:350m
 ```
 
 ## Usage
@@ -43,3 +49,6 @@ rag.search('typesetting industry')
 
 ## Supported vector databases
 - [Chroma](https://docs.trychroma.com/docs/overview/getting-started)
+
+## Supported LLM providers
+- [Ollama](https://ollama.com/): Ollama needs to be running and the configured model must have been pulled in advance.

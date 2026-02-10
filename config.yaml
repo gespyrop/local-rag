@@ -7,3 +7,9 @@ chunk:
 vector:
   db: chroma
   collection: documents
+
+# LLM properties
+llm:
+  provider: ollama
+  host: http://localhost:11434
+  model: sam860/LFM2:350m

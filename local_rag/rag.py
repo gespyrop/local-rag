@@ -3,11 +3,24 @@ High-level RAG logic.
 '''
 import os
 from typing import Self
+from dataclasses import dataclass
 from omegaconf import OmegaConf
+
+from local_rag.llm import LLM, llm_factory
 from .vector import VectorDatabase, VectorQueryResult, vector_database_factory
 from .embedding import get_text_embeddings
 from .parsers import parser_factory
 from .utils import chunk_text
+
+
+@dataclass
+class RAGResponse:
+    '''
+    Response to a user's question containing an answer
+    from the LLM together with the respective sources.
+    '''
+    content: str
+    sources: list[VectorQueryResult]
 
 
 class RAGService:
@@ -17,10 +30,11 @@ class RAGService:
     '''
 
     def __init__(self, vector_db: VectorDatabase,
-                 chunk_size: int, chunk_overlap: int):
+                 chunk_size: int, chunk_overlap: int, llm: LLM):
         self.vector_db = vector_db
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
+        self.llm = llm
 
     @staticmethod
     def from_yaml_config(yaml_file: str) -> Self:
@@ -44,7 +58,12 @@ class RAGService:
         db_name = vector_config.get('db', 'chroma')
         vector_db = vector_database_factory(db_name, **vector_config)
 
-        return RAGService(vector_db, chunk_size, chunk_overlap)
+        # LLM configuration
+        llm_config = config.get('llm', {})
+        llm_provider = llm_config.get('provider')
+        llm = llm_factory(llm_provider, **llm_config)
+
+        return RAGService(vector_db, chunk_size, chunk_overlap, llm)
 
     def add(self, path: str):
         '''
@@ -102,3 +121,23 @@ class RAGService:
         embedding = get_text_embeddings(query)
 
         return self.vector_db.query(embedding, k)
+
+    def ask(self, question: str, num_sources: int = 3) -> RAGResponse:
+        '''
+        Prompt the LLM.
+
+        :param question: User's question to the LLM
+        :type question: str
+        :param num_sources: Number of sources to be included
+        :type num_sources: int
+        :return: Answer to the user's question with sources
+        :rtype: RAGResponse
+        '''
+        sources = self.search(question, k=num_sources)
+
+        context = '\n\n'.join(map(lambda source: source.content, sources))
+        prompt = f'Context: {context}\nQuestion: {question}\nAnswer:'
+
+        answer = self.llm.ask(prompt)
+
+        return RAGResponse(answer, sources)
