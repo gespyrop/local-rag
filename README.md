@@ -41,7 +41,14 @@ rag.add('docs/')
 
 ### Search the vector database
 ```python
-rag.search('typesetting industry')
+sources = rag.search('typesetting industry')
+```
+
+### Ask a question
+```python
+response = rag.ask('What do you know about the typesetting industry?')
+print(response.content)
+print(response.sources)
 ```
 
 ## Embedding model
