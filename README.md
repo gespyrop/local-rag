@@ -22,9 +22,15 @@ from local_rag import RAGService
 rag = RAGService.from_yaml_config('config.yaml')
 ```
 
-### Add a new document
+### Add documents
+#### Add a document
 ```python
-rag.add_document('docs/lorem_ipsum.pdf')
+rag.add('docs/lorem_ipsum.pdf')
+```
+
+#### Add all documents in a directory recursively
+```python
+rag.add('docs/')
 ```
 
 ### Search the vector database

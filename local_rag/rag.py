@@ -1,6 +1,7 @@
 '''
 High-level RAG logic.
 '''
+import os
 from typing import Self
 from omegaconf import OmegaConf
 from .vector import VectorDatabase, VectorQueryResult, vector_database_factory
@@ -44,6 +45,29 @@ class RAGService:
         vector_db = vector_database_factory(db_name, **vector_config)
 
         return RAGService(vector_db, chunk_size, chunk_overlap)
+
+    def add(self, path: str):
+        '''
+        Add a document or a directory of documents to the vector database.
+
+        :param path: Path to be added
+        :type path: str
+        '''
+        if os.path.isdir(path):
+            self.add_directory(path)
+        else:
+            self.add_document(path)
+
+    def add_directory(self, directory: str):
+        '''
+        Recursively add all documents in a directory to the vector database.
+
+        :param directory: Directory to be added
+        :type directory: str
+        '''
+        for document in os.listdir(directory):
+            document_path = os.path.join(directory, document)
+            self.add_document(document_path)
 
     def add_document(self, document: str):
         '''

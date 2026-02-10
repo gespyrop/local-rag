@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     # Add new document
     if args.add:
-        rag.add_document(args.add)
+        rag.add(args.add)
         print(f'Added "{args.add}"')
 
     # Query
