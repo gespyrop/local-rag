@@ -6,7 +6,7 @@ from typing import Self
 from dataclasses import dataclass
 from omegaconf import OmegaConf
 
-from local_rag.llm import LLM, llm_factory
+from .llm import LLM, llm_factory
 from .vector import VectorDatabase, VectorQueryResult, vector_database_factory
 from .embedding import get_text_embeddings
 from .parsers import parser_factory
