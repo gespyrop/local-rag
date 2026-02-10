@@ -60,7 +60,7 @@ class RAGService:
 
     def add_directory(self, directory: str):
         '''
-        Recursively add all documents in a directory to the vector database.
+        Add all documents in a directory to the vector database.
 
         :param directory: Directory to be added
         :type directory: str

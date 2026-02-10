@@ -28,7 +28,7 @@ rag = RAGService.from_yaml_config('config.yaml')
 rag.add('docs/lorem_ipsum.pdf')
 ```
 
-#### Add all documents in a directory recursively
+#### Add all documents in a directory
 ```python
 rag.add('docs/')
 ```
