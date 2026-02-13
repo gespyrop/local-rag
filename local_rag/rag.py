@@ -8,7 +8,7 @@ from omegaconf import OmegaConf
 
 from .llm import LLM, llm_factory
 from .vector import VectorDatabase, VectorQueryResult, vector_database_factory
-from .embedding import get_text_embeddings
+from .embedding import EmbeddingService
 from .parsers import parser_factory
 from .utils import chunk_text
 
@@ -29,8 +29,10 @@ class RAGService:
     and orchestrating the required set of services.
     '''
 
-    def __init__(self, vector_db: VectorDatabase,
-                 chunk_size: int, chunk_overlap: int, llm: LLM):
+    def __init__(self, embedding_service: EmbeddingService,
+                 vector_db: VectorDatabase, chunk_size: int,
+                 chunk_overlap: int, llm: LLM):
+        self.embedding_service = embedding_service
         self.vector_db = vector_db
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
@@ -53,6 +55,9 @@ class RAGService:
         chunk_size = chunk_config.get('size', 500)
         chunk_overlap = chunk_config.get('overlap', 100)
 
+        # Embedding service
+        embedding_service = EmbeddingService()
+
         # Vector database configuration
         vector_config = config.get('vector', {})
         db_name = vector_config.get('db', 'chroma')
@@ -63,7 +68,11 @@ class RAGService:
         llm_provider = llm_config.get('provider')
         llm = llm_factory(llm_provider, **llm_config)
 
-        return RAGService(vector_db, chunk_size, chunk_overlap, llm)
+        return RAGService(embedding_service,
+                          vector_db,
+                          chunk_size,
+                          chunk_overlap,
+                          llm)
 
     def add(self, path: str):
         '''
@@ -103,7 +112,7 @@ class RAGService:
 
         ids = [f'{file_name}_chunk_{chunk+1}' for chunk in range(len(chunks))]
         metadatas = [{"source": document} for _ in chunks]
-        embeddings = get_text_embeddings(chunks)
+        embeddings = self.embedding_service.embed(chunks)
 
         self.vector_db.add(ids, embeddings, metadatas, documents=chunks)
 
@@ -118,7 +127,7 @@ class RAGService:
         :return: List containing the `k` most relevant results.
         :rtype: list[VectorQueryResult]
         '''
-        embedding = get_text_embeddings(query)
+        embedding = self.embedding_service.embed(query)
 
         return self.vector_db.query(embedding, k)
 
